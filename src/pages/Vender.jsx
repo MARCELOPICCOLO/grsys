@@ -15,6 +15,7 @@ export default function Vender({ lista, setComanda, listaProdutos }) {
             order={item}
             key={index}
             listaProdutos={listaProdutos}
+            setComanda={setComanda}
           />
         ))}
       </div>
