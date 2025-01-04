@@ -11,10 +11,10 @@ export default function TableItens({ order }) {
       </thead>
       <tbody>
         {order.products.map((prod, index) => (
-          <tr key={prod.prod_id}>
+          <tr key={prod.id}>
             <th scope="row">{prod.id}</th>
             <td>{prod.name}</td>
-            <td>{prod.price}</td>
+            <td>{prod.price.toFixed(2)}</td>
             <td>{prod.quantidade}</td>
           </tr>
         ))}

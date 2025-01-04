@@ -1,10 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import VenderComponent from "../componentes/VenderComponent";
 import Modal from "../componentes/ModalComponent";
+import { useEffect } from "react";
 
-export default function Vender({ lista, setComanda, listaProdutos }) {
+export default function Vender({ lista, setComandas, listaProdutos }) {
   return (
-    <div class="d-flex flex-column p-2">
+    <div class="d-flex flex-column p-2 flex-grow-1">
       <h1 class="text-primary">GERENCIAR COMANDAS</h1>
       <div class="d-flex flex-row justify-content-end">
         <button class="btn btn-primary sm-btm mb-2">NOVA</button>
@@ -15,7 +16,8 @@ export default function Vender({ lista, setComanda, listaProdutos }) {
             order={item}
             key={index}
             listaProdutos={listaProdutos}
-            setComanda={setComanda}
+            setComandas={setComandas}
+            comandas={lista}
           />
         ))}
       </div>

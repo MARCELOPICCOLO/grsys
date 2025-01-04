@@ -25,6 +25,7 @@ export default function Dashboard() {
             lista={comandas}
             setComandas={setComandas}
             listaProdutos={todosProdutos}
+            agrupar={agrupar}
           />
         );
       case 1:
@@ -56,18 +57,19 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/order");
-        const data = await response.json();
+        if (comandas == null) {
+          const response = await fetch("http://127.0.0.1:8000/api/order");
+          const data = await response.json();
+          console.log(data);
 
-        if (Array.isArray(data.orders)) {
-          data.orders = data.orders.map((o) => ({
-            ...o,
-            products: agrupar(Object.values(o.products)), // Converte e agrupa os produtos
-          }));
+          if (Array.isArray(data.orders)) {
+            data.orders = data.orders.map((o) => ({
+              ...o,
+              products: agrupar(Object.values(o.products)), // Converte e agrupa os produtos
+            }));
+          }
+          setComandas(data);
         }
-
-        console.log(data);
-        setComandas(data);
       } catch (e) {
         console.error("Erro ao buscar dados:", e);
       }
@@ -83,7 +85,6 @@ export default function Dashboard() {
       try {
         const response = await fetch("http://127.0.0.1:8000/api/product");
         const data = await response.json();
-        console.log("--->>", data);
         setTodosProdutos(data.products);
       } catch (e) {
         console.error("Erro ao buscar dados:", e);
@@ -91,7 +92,6 @@ export default function Dashboard() {
     };
 
     if (todosProdutos.length == 0) {
-      console.log("aqui");
       fetchData();
     }
   }, [todosProdutos]);
@@ -109,7 +109,9 @@ export default function Dashboard() {
             </ul>
           </div>
         </div>
-        {comandas ? renderPage() : null}
+        <div class="d-flex" style={{ width: "55%" }}>
+          {comandas ? renderPage() : null}
+        </div>
       </div>
     </>
   );
