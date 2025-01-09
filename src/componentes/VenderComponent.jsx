@@ -6,12 +6,15 @@ export default function Table({ order, listaProdutos, setComandas, comandas }) {
   const [localOrder, setLocalOrder] = useState(order); // Estado local para atualizar a tabela]
 
   function getPriceOrder() {
-    const valor = order.products.reduce(
-      (acc, item) => (acc += item.price * item.quantidade),
-      0
-    );
-
-    return parseFloat(valor.toFixed(2));
+    if (order.products) {
+      const valor = order.products.reduce(
+        (acc, item) => (acc += item.price * item.quantidade),
+        0
+      );
+      return parseFloat(valor.toFixed(2));
+    } else {
+      return 0;
+    }
   }
   const [price, setPrice] = useState(getPriceOrder());
 
@@ -26,28 +29,27 @@ export default function Table({ order, listaProdutos, setComandas, comandas }) {
         setPrice(getPriceOrder());
       }
     }
-  }, [comandas]); // Monitora alterações em "comandas"
+  }, [comandas, order]); // Monitora alterações em "comandas"
 
   return (
-    <div class="mb-2">
+    <div class="mb-4">
       <div class="card p-2">
         <div class="card-body">
-          <div class="d-flex flex-row justify-content-between align-items-center">
-            <div>
-              <ModalComponent
-                listaProdutos={listaProdutos}
-                order={order}
-                setComandas={setComandas}
-                comandas={comandas}
-              />
-            </div>
-            <p class="font-weight-bold"> R$ {price.toFixed(2)}</p>
-          </div>
-          <div class="bg-info text-white d-flex flex-row justify-content-between px-2 align-items-center">
-            <h5>Nº : {localOrder.id}</h5>
-            <h5>Mesa: {localOrder.table_num}</h5>
+          <div class="d-flex flex-row justify-content-between text-primary">
+            <h5>Comanda: {order.id}</h5>
+            <h5>Mesa: {order.table_num}</h5>
+            <h5> R$ {price.toFixed(2)}</h5>
           </div>
           <div>
+            <hr class="hr mt-0" />
+            <ModalComponent
+              listaProdutos={listaProdutos}
+              order={order}
+              setComandas={setComandas}
+              comandas={comandas}
+            />
+          </div>
+          <div class="text-secondary">
             {/* Passa a ordem atualizada para "TableItens" */}
             <TableItens order={localOrder} />
           </div>

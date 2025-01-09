@@ -1,23 +1,28 @@
 export default function TableItens({ order }) {
+  const header = ["ID", "PRODUTO", "PREÇO UNI.", "QUANT"];
   return (
-    <table class="table table-striped">
+    <table class="table text-secondary">
       <thead>
         <tr>
-          <th scope="col">ID</th>
-          <th scope="col">PRODUTO</th>
-          <th scope="col">PREÇO</th>
-          <th scope="col">QUANT</th>
+          {header.map((item) => (
+            <th scope="col" class="text-secondary">
+              {item}
+            </th>
+          ))}
         </tr>
       </thead>
       <tbody>
-        {order.products.map((prod, index) => (
-          <tr key={prod.id}>
-            <th scope="row">{prod.id}</th>
-            <td>{prod.name}</td>
-            <td>{prod.price.toFixed(2)}</td>
-            <td>{prod.quantidade}</td>
-          </tr>
-        ))}
+        {order.products &&
+          order.products.map((prod, index) => (
+            <tr key={prod.id}>
+              <th scope="row" class="text-secondary">
+                {prod.id}
+              </th>
+              <td class="text-secondary">{prod.name}</td>
+              <td class="text-secondary">{prod.price.toFixed(2)}</td>
+              <td class="text-secondary">{prod.quantidade}</td>
+            </tr>
+          ))}
       </tbody>
     </table>
   );

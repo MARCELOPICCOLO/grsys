@@ -32,6 +32,9 @@ const ModalExample = ({ listaProdutos, order, setComandas, comandas }) => {
 
   const apiSaveProduct = async () => {
     try {
+      if (!product) {
+        setProduct(listaProdutos[0]);
+      }
       const response = fetch("http://127.0.0.1:8000/api/order-product", {
         method: "POST", // Método da requisição
         headers: {
@@ -43,11 +46,7 @@ const ModalExample = ({ listaProdutos, order, setComandas, comandas }) => {
           amount: Number(amount),
         }), // Transforma os dados em uma string JSON
       });
-
       setMsg("Produto adicionado com sucesso");
-
-      const data = await response.json();
-      console.log(data);
     } catch (e) {
       console.log(e);
     }
@@ -59,22 +58,27 @@ const ModalExample = ({ listaProdutos, order, setComandas, comandas }) => {
     let index = null;
     let obj = await baseObj(currentProduct);
 
-    index = order.products.findIndex((item) => item.id == currentProduct.id);
-    apiSaveProduct(currentProduct);
+    if (order.products) {
+      index = order.products.findIndex((item) => item.id == currentProduct.id);
+      apiSaveProduct(currentProduct);
 
-    if (index === -1) {
-      order.products.push(obj);
+      if (index === -1) {
+        order.products.push(obj);
+        let indexO = comandas.orders.findIndex((item) => item.id == order.id);
+      } else {
+        order.products[index].quantidade += Number(amount);
+      }
       let indexO = comandas.orders.findIndex((item) => item.id == order.id);
-    } else {
-      order.products[index].quantidade += Number(amount);
-    }
-    let indexO = comandas.orders.findIndex((item) => item.id == order.id);
 
-    if (indexO !== -1) {
-      let copy = { ...comandas }; // Cria uma nova cópia do objeto
-      copy.orders = [...comandas.orders]; // Cria uma nova cópia do array de pedidos
-      copy.orders[indexO] = order; // Atualiza o pedido específico
-      setComandas(copy); // Define o novo estado
+      if (indexO !== -1) {
+        let copy = { ...comandas }; // Cria uma nova cópia do objeto
+        copy.orders = [...comandas.orders]; // Cria uma nova cópia do array de pedidos
+        copy.orders[indexO] = order; // Atualiza o pedido específico
+        console.log("adidiciou");
+        setComandas(copy); // Define o novo estado
+        setProduct(listaProdutos[0]); // Define o novo estado por
+      }
+      setAmount(1);
     }
   };
 
@@ -99,9 +103,12 @@ const ModalExample = ({ listaProdutos, order, setComandas, comandas }) => {
 
   return (
     <div>
-      <button class="btn btn-primary mb-4" onClick={handleShow}>
-        +
-      </button>
+      <div class="d-flex flex-row justify-content-between align-items-center">
+        <button class="btn btn-primary mb-4" onClick={handleShow}>
+          + Adicionar
+        </button>
+      </div>
+
       {show && (
         <div class="modal fade show d-block" tabIndex={-1} role="dialog">
           <div class="modal-dialog" role="document">
@@ -124,50 +131,42 @@ const ModalExample = ({ listaProdutos, order, setComandas, comandas }) => {
               </div>
               <div class="modal-body">
                 {Array.isArray(listaProdutos) && listaProdutos.length > 0 ? (
-                  <div>
-                    <div class="d-flex flex-row justify-content-between">
-                      <h5>Comanda: {order.id}</h5>
-                      <h5>Mesa: {order.table_num}</h5>
-                    </div>
-                    <div class="d-flex flex-row justify-content-between align-items-center">
-                      <form>
-                        <div class="form-group">
-                          <label for="exampleFormControlSelect1">
-                            Produtos cadastrados
-                          </label>
-                          <select
-                            class="form-control"
-                            id="exampleFormControlSelect1"
-                            onChange={handleSelectChange}
-                          >
-                            {listaProdutos.map((item, index) => (
-                              <option key={item.id} value={item.id}>
-                                {item.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </form>
+                  <div class="d-flex flex-row justify-content-between align-items-center">
+                    <form>
                       <div class="form-group">
                         <label for="exampleFormControlSelect1">
-                          Quantidade
+                          Produtos cadastrados
                         </label>
-                        <input
+                        <select
                           class="form-control"
-                          type="text"
-                          placeholder="Input padrão"
-                          onChange={handleInputChange}
-                        />
+                          id="exampleFormControlSelect1"
+                          onChange={handleSelectChange}
+                        >
+                          {listaProdutos.map((item, index) => (
+                            <option key={item.id} value={item.id}>
+                              {item.name}
+                            </option>
+                          ))}
+                        </select>
                       </div>
-                      <div class="d-flex align-self-end justify-content-center">
-                        {product ? (
-                          <p class="text-center mt-4">
-                            R$ {amount * product.price_out}
-                          </p>
-                        ) : (
-                          <p class="text-center mt-4">R$ {amount * 1}</p>
-                        )}
-                      </div>
+                    </form>
+                    <div class="form-group">
+                      <label for="exampleFormControlSelect1">Quantidade</label>
+                      <input
+                        class="form-control"
+                        type="text"
+                        placeholder="Input padrão"
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div class="d-flex align-self-end justify-content-center">
+                      {product ? (
+                        <p class="text-center mt-4">
+                          R$ {amount * product.price_out}
+                        </p>
+                      ) : (
+                        <p class="text-center mt-4">R$ {amount * 1}</p>
+                      )}
                     </div>
                   </div>
                 ) : null}
